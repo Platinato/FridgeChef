@@ -1,0 +1,10 @@
+node_modules/
+.expo/
+dist/
+.verify-dist/
+ios/
+android/
+assets/
+package-lock.json
+# Verbatim copy of sprints/reference/api-contract.md - keep it identical, do not reformat.
+docs/api-contract.md

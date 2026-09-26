@@ -1,0 +1,45 @@
+# dependencies
+node_modules/
+
+# env - only .env.example is tracked
+.env
+.env.*.local
+.env*.local
+
+# Expo / Metro
+.expo/
+dist/
+web-build/
+.verify-dist/
+expo-env.d.ts
+.metro-health-check*
+
+# generated native folders (Continuous Native Generation)
+ios/
+android/
+.kotlin/
+
+# signing material
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# logs
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# typescript
+*.tsbuildinfo
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Claude Code local settings
+.claude/settings.local.json

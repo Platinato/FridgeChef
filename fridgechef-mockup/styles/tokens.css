@@ -1,0 +1,66 @@
+/* FridgeChef design tokens - mirrored 1:1 in js/theme.js (future theme.ts) */
+:root {
+  /* Colour */
+  --bg: #0A0A0A;
+  --surface-1: #161616;
+  --surface-2: #1F1F1F;
+  --surface-3: #2A2A2A;
+  --border: #2E2E2E;
+  --dash: rgba(255, 255, 255, .18);
+  --dash-ink: rgba(10, 10, 10, .22);
+  --lime: #C6F432;
+  --lime-soft: #E3FA9C;
+  --lime-deep: #9BC21E;
+  --light-card: #F2F2F2;
+  --light-grad: linear-gradient(180deg, #FFFFFF 0%, #CFCFCF 100%);
+  --text: #FFFFFF;
+  --text-2: #9A9A9A;
+  --text-3: #5C5C5C;
+  --ink: #0A0A0A;
+  --ink-2: #4A4A4A;
+  --alert: #FF3B30;
+  --alert-text: #FF8A82;
+  --photo-fade: linear-gradient(180deg, rgba(10, 10, 10, 0) 40%, #1F3A0E 85%, #2B4A12 100%);
+  --backdrop: #9CC43A;
+
+  /* Type */
+  --font-display: 'Bebas Neue', 'Oswald', Impact, sans-serif;
+  --font-body: 'Inter', -apple-system, system-ui, sans-serif;
+  --fs-display-xl: 84px;
+  --fs-display-l: 56px;
+  --fs-display-m: 34px;
+  --fs-display-s: 22px;
+  --fs-body-l: 17px;
+  --fs-body: 15px;
+  --fs-caption: 13px;
+  --fs-micro: 11px;
+
+  /* Shape */
+  --r-xl: 32px;
+  --r-l: 28px;
+  --r-m: 20px;
+  --r-s: 14px;
+  --r-pill: 999px;
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --gutter: 16px;
+
+  /* Elevation & motion */
+  --shadow-float: 0 10px 30px rgba(0, 0, 0, .5);
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --dur: 200ms;
+
+  /* Device */
+  --phone-w: 390px;
+  --phone-h: 844px;
+  --status-h: 54px;
+  --home-h: 34px;
+  --fit: 1;
+}

@@ -1,0 +1,46 @@
+/* Layout-only rules per screen (future: StyleSheet.create inside each screen file). */
+
+/* Onboarding */
+.s-onb .c-photohero__after { gap: 14px; }
+
+/* Home */
+.s-home__scan-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 96px; }
+.s-home__scan-top h2 { font-size: 42px; line-height: .9; }
+.s-home__scan-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.s-home__scan-bottom b { display: block; margin-top: 4px; font-size: 22px; line-height: 1; }
+.s-home__low { display: flex; gap: 10px; overflow-x: auto; margin-right: calc(-1 * var(--gutter)); padding-right: var(--gutter); }
+
+/* Scan */
+.s-scan .c-screen__scroll { padding: 0; }
+.s-scan__flash { position: absolute; inset: 0; z-index: 40; background: #fff; opacity: 0; pointer-events: none; }
+.s-scan__flash.go { animation: fc-flash 420ms ease-out; }
+.s-scan__tip { position: absolute; top: 118px; left: 0; right: 0; z-index: 5; display: flex; justify-content: center; }
+.s-scan__panel {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 6;
+  display: flex; flex-direction: column; gap: 12px; padding: 48px var(--gutter) 124px;
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0), rgba(10, 10, 10, .78) 28%, var(--bg));
+}
+.s-scan__controls { display: flex; align-items: center; justify-content: space-between; padding: 0 22px; }
+
+/* Analyzing */
+.s-an__count { display: flex; align-items: baseline; gap: 10px; margin-top: 20px; }
+.s-an__count b { font-size: 64px; line-height: .9; color: var(--lime); }
+.s-an__count span { font-size: 28px; color: var(--text-2); }
+.s-an__chips { display: flex; flex-wrap: wrap; gap: 10px; min-height: 92px; }
+
+/* Recipe detail */
+.s-recipe__title { margin-top: auto; }
+.s-recipe__title h1 { font-size: 62px; line-height: .86; }
+.s-recipe__title p { margin-top: 8px; font-size: 14px; color: rgba(255, 255, 255, .85); }
+
+/* Cook mode */
+.s-cook__num { display: flex; align-items: baseline; gap: 10px; margin-top: 8px; }
+.s-cook__num b { font-size: 150px; line-height: .78; color: var(--lime); }
+.s-cook__num span { font-size: 40px; color: var(--text-2); }
+.s-cook__text { font-size: 22px; line-height: 1.4; font-weight: 500; }
+.s-cook__timer { display: flex; align-items: center; gap: 14px; }
+
+/* Pantry */
+.s-pantry__level { display: flex; align-items: baseline; gap: 8px; }
+.s-pantry__level b { font-size: 72px; line-height: .85; color: var(--lime); }
+.s-pantry__level span { font-size: 26px; color: var(--text-2); }

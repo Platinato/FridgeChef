@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "fridgechef-mockup",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".claude/static-server.js"],
+      "port": 5173
+    },
+    {
+      "name": "fridgechef-app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "fridgechef-app", "run", "web", "--", "--port", "8081"],
+      "port": 8081
+    }
+  ]
+}

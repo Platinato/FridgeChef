@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FridgeChef Mockup</title>
+  <meta name="description" content="Clickable iPhone mockup of FridgeChef - scan your kitchen, confirm quantities, cook to your mood.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/screens.css">
+</head>
+<body>
+  <nav class="devmenu" id="devmenu" aria-label="Prototype navigation"></nav>
+  <main class="stage" id="stage"></main>
+  <main class="gallery" id="gallery" hidden></main>
+
+  <!-- Core (order matters) -->
+  <script src="js/util.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/logic.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/router.js"></script>
+
+  <!-- Components (each registers FC.components.<Name>) -->
+  <script src="js/components/Screen.js"></script>
+  <script src="js/components/TopBar.js"></script>
+  <script src="js/components/AppLogo.js"></script>
+  <script src="js/components/IconButton.js"></script>
+  <script src="js/components/HeroTitle.js"></script>
+  <script src="js/components/Chip.js"></script>
+  <script src="js/components/ChipRow.js"></script>
+  <script src="js/components/Badge.js"></script>
+  <script src="js/components/LiveBadge.js"></script>
+  <script src="js/components/CounterPill.js"></script>
+  <script src="js/components/PrimaryButton.js"></script>
+  <script src="js/components/TicketCard.js"></script>
+  <script src="js/components/Disc.js"></script>
+  <script src="js/components/StatTile.js"></script>
+  <script src="js/components/StatTileRow.js"></script>
+  <script src="js/components/LevelBars.js"></script>
+  <script src="js/components/SegmentedControl.js"></script>
+  <script src="js/components/Stepper.js"></script>
+  <script src="js/components/Toggle.js"></script>
+  <script src="js/components/RangeSlider.js"></script>
+  <script src="js/components/QuantitySlider.js"></script>
+  <script src="js/components/BottomNav.js"></script>
+  <script src="js/components/TabBar.js"></script>
+  <script src="js/components/IngredientRow.js"></script>
+  <script src="js/components/RecipeCard.js"></script>
+  <script src="js/components/StepTimeline.js"></script>
+  <script src="js/components/PhotoThumbStrip.js"></script>
+  <script src="js/components/ScanOverlay.js"></script>
+  <script src="js/components/DetectedChip.js"></script>
+  <script src="js/components/PantryItem.js"></script>
+  <script src="js/components/BottomSheet.js"></script>
+  <script src="js/components/Toast.js"></script>
+  <script src="js/components/EmptyState.js"></script>
+  <script src="js/components/SectionHeader.js"></script>
+  <script src="js/components/FormSection.js"></script>
+  <script src="js/components/InfoCard.js"></script>
+  <script src="js/components/ListRow.js"></script>
+  <script src="js/components/ProgressBar.js"></script>
+  <script src="js/components/PhotoHero.js"></script>
+  <script src="js/components/PaginationDots.js"></script>
+  <script src="js/components/SearchField.js"></script>
+  <script src="js/components/PhotoPicker.js"></script>
+  <script src="js/components/ShutterButton.js"></script>
+  <script src="js/components/PhotoStack.js"></script>
+
+  <!-- Screens (each registers FC.screens.<Name>) -->
+  <script src="js/screens/Onboarding.js"></script>
+  <script src="js/screens/Home.js"></script>
+  <script src="js/screens/Scan.js"></script>
+  <script src="js/screens/Analyzing.js"></script>
+  <script src="js/screens/Confirm.js"></script>
+  <script src="js/screens/Mood.js"></script>
+  <script src="js/screens/Suggestions.js"></script>
+  <script src="js/screens/RecipeDetail.js"></script>
+  <script src="js/screens/CookMode.js"></script>
+  <script src="js/screens/Pantry.js"></script>
+  <script src="js/screens/Saved.js"></script>
+  <script src="js/screens/Gallery.js"></script>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
