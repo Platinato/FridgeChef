@@ -39,26 +39,30 @@ fridgechef-app/
    │  ├─ client.ts          # opens the DB (the ONLY expo-sqlite import), WAL + foreign_keys, getDb(), setDatabaseForTests()
    │  ├─ migrate.ts         # runs migrations/ in order, tracked with PRAGMA user_version
    │  ├─ migrations/        # 0001_init.ts, 0002_… - append-only, never edit a shipped one
-   │  ├─ repositories/      # profileRepo, prefsRepo, pantryRepo, scanRepo, cookbookRepo, metaRepo - the ONLY place app SQL lives
+   │  ├─ repositories/      # profileRepo, prefsRepo, pantryRepo, scanRepo, cookbookRepo, metaRepo, resetRepo - the ONLY place app SQL lives
    │  ├─ seeds/demoUser.ts  # demo starting state (pantry levels, saved / cooked, last scan) applied in mock mode
+   │  ├─ bootstrap.ts       # initDatabase(), seedDemoData(), seedDefaults(), resetDatabase()
    │  └─ testing/nodeDriver.ts  # SqlDriver on node:sqlite, for Jest and scripts/api-smoke.ts
+   ├─ testing/              # test-only fixtures (mockup data as domain types) - never imported by app code
    ├─ services/
    │  ├─ config.ts          # the ONLY place env is read
    │  ├─ api/
    │  │  ├─ FridgeChefApi.ts    # interface - the app depends on this, never on an implementation
    │  │  ├─ contract.ts         # Zod schemas for request/response DTOs (mirrors api-contract.md)
    │  │  ├─ mappers.ts          # DTO <-> domain; the ONLY place that knows the wire format
-   │  │  ├─ errors.ts           # ApiError (kind: network | timeout | unauthorized | rate_limited | server | invalid_response)
-   │  │  ├─ http/HttpApi.ts     # fetch implementation (base URL, auth header, timeout, retry)
+   │  │  ├─ errors.ts           # ApiError (kind: network | timeout | unauthorized | rate_limited | server | not_found | invalid_response) + toUserMessage
+   │  │  ├─ http/HttpApi.ts     # FridgeChefApi over HTTP (explicit HttpOptions; http/options.ts builds them from config)
+   │  │  ├─ http/request.ts     # the ONLY fetch call: URL join, auth + X-Client, timeout, retry policy, decodeResponse()
    │  │  ├─ http/endpoints.ts   # path table
-   │  │  ├─ mock/MockApi.ts     # reads the mock SQLite DB, simulated latency/failures
+   │  │  ├─ mock/MockApi.ts     # simulated latency/failures, then mockBackend → decodeResponse() → mappers (same path as HttpApi)
+   │  │  ├─ mock/mockBackend.ts # the stand-in server: request DTOs in, raw replies (status + JSON) out, from the mock DB
    │  │  ├─ mock/db/            # the stand-in backend's database (fridgechef-mock.db)
-   │  │  │  ├─ schema.ts        # mock tables + the seeding migration
-   │  │  │  ├─ mockDb.ts        # openMockDatabase() / resetMockDatabase() - called only in mock mode
+   │  │  │  ├─ schema.ts        # mock tables + the seeding migration (mockMigrations, prepareMockDatabase); no expo-sqlite import
+   │  │  │  ├─ mockDb.ts        # openMockDatabase() / resetMockDatabase() - opened lazily on the first mock call
    │  │  │  ├─ mockRepo.ts      # the ONLY place mock SQL lives; returns wire DTOs
    │  │  │  └─ seed/            # catalog.ts, detections.ts, recipes.ts, demoPhotos.ts - typed as contract DTOs
    │  │  └─ index.ts            # getApi(): picks mock | http from config; listDemoPhotos() ([] in http mode)
-   │  ├─ queries/           # TanStack Query hooks: useCatalog, useDetectIngredients, useSuggestions, useRecipe
+   │  ├─ queries/           # QueryProvider + TanStack Query hooks: useCatalog, useDetectIngredients, useSuggestions, useRecipe
    │  └─ media/             # image prep: resize → JPEG → base64
 ```
 
@@ -132,13 +136,13 @@ Keeping the mock backend in its own file means it can be reset or deleted withou
 
 | Table | Rows | Columns (main) |
 |---|---|---|
-| `app_meta` | key/value | `key` PK, `value` TEXT. Keys: `onboarded`, `seeded_at`, `last_scan_at` |
+| `app_meta` | key/value | `key` PK, `value` TEXT. Keys: `onboarded`, `seeded_at`, `last_scan_at`, `last_scan_items`, `auto_include` |
 | `profile` | exactly 1 (`id = 1`) | name, diet, `allergies` (JSON text, Zod-validated on read), household_size, units, default_effort, updated_at |
 | `preferences` | exactly 1 (`id = 1`) | mood, time_min, effort, servings, hunger, diet, spice, filter, sort, `cuisines` / `equipment` (JSON text) |
-| `staples` | one per staple | id PK, name, category, unit, unit_hint, per_level, level, included, updated_at, sort_order |
+| `staples` | one per staple | id PK, name, category, unit, unit_hint, per_level, level, included, updated_at, sort_order (low stock = level ≤ 1.5, a domain constant) |
 | `scan_sessions` | one per scan | id PK, created_at, confirmed_at (NULL until confirmed), status |
-| `scan_photos` | ≤ 6 per session | id PK, session_id FK, uri, idx, retaken |
-| `scan_items` | detected + manual items | id, session_id FK, name, category, unit, min, max, step, estimate, value (base unit), display_unit, alt_unit (JSON), confidence, photo_index, image_url, touched, confirmed, manual |
+| `scan_photos` | ≤ 6 per session | (session_id FK, id) PK, uri, label, idx, retaken |
+| `scan_items` | detected + manual items | (session_id FK, id) PK, name, category, unit, min, max, step, estimate, value (base unit), display_unit, alt_unit (JSON), confidence (`manual` = added by the user), photo_index, image_url, touched, sort_order |
 | `scan_warnings` | per photo | session_id FK, photo_index, type, message |
 | `recipe_snapshots` | one per recipe seen | id PK, `recipe` (domain Recipe as JSON, Zod-validated on read), fetched_at |
 | `saved_recipes` | one per saved | recipe_id PK → recipe_snapshots, saved_at |
@@ -157,35 +161,37 @@ Small lists and whole snapshots are stored as JSON text **inside SQLite** and al
 
 ### Boot sequence
 
-1. The root layout keeps the splash screen visible.
-2. `initDatabase()`: open `fridgechef.db` and run its migrations. In mock mode also open `fridgechef-mock.db`, migrate it, and seed it if it's empty.
-3. First launch in mock mode (`app_meta.seeded_at` unset): apply `db/seeds/demoUser.ts` to `fridgechef.db`. In http mode, start empty with the catalog's `defaultStaples` at level 3.
+1. The root layout keeps the splash screen visible (`useBoot()` → `bootApp()` in `src/state/boot.ts`, D38).
+2. `initDatabase()`: open `fridgechef.db` and run its migrations. In mock mode, `fridgechef-mock.db` is opened, migrated and seeded **lazily** on the first mock API call (D34).
+3. First launch in mock mode (`app_meta.seeded_at` unset): apply `db/seeds/demoUser.ts` to `fridgechef.db`. In http mode, start empty; when the catalog first loads, `AppEffects` adds its `defaultStaples` at level 3 into an empty pantry, once per install.
 4. `hydrateStores()`: every Zustand store loads its state from its repository.
-5. Hide the splash. If any step throws, show a full-screen error with a Retry button (no crash loop).
+5. Hide the splash. If any step throws, show `BootErrorScreen` with "Try again" (reruns the boot; no crash loop). A failed write-through later shows a toast.
+6. Routes: `(tabs)` (Home / Pantry / Saved with the floating BottomNav) redirects to `/onboarding` until `profile.onboarded`; Scan and everything after it are full-screen stack routes (D37).
 
 ### State: Zustand over SQLite
 
 - Stores keep the state the UI renders. They hydrate once at boot.
 - Each action updates the store, then writes through to its repository (awaitable, so tests can wait for it). A failed write is logged, and in dev it shows a toast.
-- `resetAll()` clears the user tables in one transaction, then reseeds in mock mode and hydrates again.
+- `resetAll()` (`src/state`) waits for queued writes, then `resetDatabase()` clears the user tables in one transaction and reseeds; the stores hydrate again.
+- Writes are serialised through one queue (`state/persist.ts`) so no statement lands inside another action's transaction (expo-sqlite includes every statement that runs while a transaction is open).
 - Transient UI state (open sheets, in-flight requests) is never written to the database.
 
 ### Mock backend database
 
 - `services/api/mock/db/seed/` holds typed TypeScript seed modules (`catalog.ts`, `detections.ts`, `recipes.ts`, `demoPhotos.ts`), typed as the contract DTO types, so the compiler checks them against `contract.ts`.
 - The seeding migration inserts one row per entity: a few indexed columns used for lookups (e.g. recipe `id`, detection `photo_index`) plus the full wire DTO in a `dto` TEXT column.
-- `MockApi` reads rows through `mockRepo.ts`, then parses them with the same Zod schemas and mappers `HttpApi` uses.
+- `MockApi` reads rows through `mockRepo.ts` (via `mockBackend.ts`, which answers like a server), then parses the reply with the same `decodeResponse()`, Zod schemas and mappers `HttpApi` uses. A parity test proves both paths return deep-equal domain data (D32).
 - `listDemoPhotos()` in `services/api/index.ts` reads the demo photos for the Scan screen's "Use demo photos" helper. It returns `[]` in http mode.
 
 ### Tests and scripts
 
-- `src/db/testing/nodeDriver.ts` implements `SqlDriver` on **`node:sqlite`** (built into Node 24, no dependency). Jest and `scripts/api-smoke.ts` use it with an in-memory database (`:memory:`) or a temp file.
+- `src/db/testing/nodeDriver.ts` implements `SqlDriver` on **`node:sqlite`** (built into Node 24, no dependency). Jest and `scripts/api-smoke.ts` (`npm run api:smoke`) use it with an in-memory database (`:memory:`) or a temp file.
 - If Jest can't load `node:sqlite`, fall back to `sql.js` (pure WASM) behind the same port, and record the decision.
 - Tests inject the driver with `setDatabaseForTests()`. They never mock SQL calls one by one.
 
 ### Web preview
 
-Web support in `expo-sqlite` is alpha. For `npm run web` it needs Metro to serve `.wasm` files and the headers `Cross-Origin-Embedder-Policy: credentialless` and `Cross-Origin-Opener-Policy: same-origin` (see the SDK 57 docs). If the web preview still can't open the database, record it as a known issue. iOS on a device is what counts.
+Web support in `expo-sqlite` is alpha. For `npm run web`, `metro.config.js` serves `.wasm` files and sends `Cross-Origin-Embedder-Policy: credentialless` + `Cross-Origin-Opener-Policy: same-origin` (SDK 57 docs), and `app.config.ts` uses `web.output: 'single'` (static rendering fails on expo-sqlite's web worker). With both, the browser preview runs the real database (D41). iOS on a device is still what counts.
 
 ### Privacy and backup
 

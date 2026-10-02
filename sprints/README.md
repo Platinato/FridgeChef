@@ -31,14 +31,14 @@ Paste the pass/fail summary of both into the handbook. Also add any manual smoke
 |---|---|---|---|---|
 | 00 | Kickoff (planning handover) | `00-kickoff/` | - | Done |
 | 01 | Project bootstrap and tooling | `01-bootstrap/` | 00 | Done |
-| 02 | Design system: tokens, fonts, icons, primitives | `02-design-system/` | 01 | Not started |
-| 03 | Composite components | `03-components/` | 02 | Not started |
-| 04 | Domain logic, SQLite storage and on-device state | `04-domain-state/` | 01 | Not started |
-| 05 | API layer (mock + http seam) | `05-api-layer/` | 04 | Not started |
-| 06 | App shell, onboarding, Home, Pantry, Saved/Profile | `06-shell-core-screens/` | 03, 05 | Not started |
-| 07 | Scan → Analyzing → Confirm quantities | `07-scan-confirm/` | 06 | Not started |
-| 08 | Mood → Suggestions → Recipe → Cook → pantry update | `08-recipes-cook/` | 07 | Not started |
-| 09 | Polish, QA and release readiness | `09-polish-qa/` | 08 | Not started |
+| 02 | Design system: tokens, fonts, icons, primitives | `02-design-system/` | 01 | Done |
+| 03 | Composite components | `03-components/` | 02 | Done |
+| 04 | Domain logic, SQLite storage and on-device state | `04-domain-state/` | 01 | Done |
+| 05 | API layer (mock + http seam) | `05-api-layer/` | 04 | Done |
+| 06 | App shell, onboarding, Home, Pantry, Saved/Profile | `06-shell-core-screens/` | 03, 05 | Done with carry-over |
+| 07 | Scan → Analyzing → Confirm quantities | `07-scan-confirm/` | 06 | Done with carry-over |
+| 08 | Mood → Suggestions → Recipe → Cook → pantry update | `08-recipes-cook/` | 07 | Done with carry-over |
+| 09 | Polish, QA and release readiness | `09-polish-qa/` | 08 | Done with carry-over |
 | 10 | API go-live (**blocked until the user supplies the endpoint + key**) | `10-api-go-live/` | 09 + user input | Blocked |
 
 Status values: `Not started` · `In progress` · `Done` · `Done with carry-over` · `Blocked`.
