@@ -2,7 +2,7 @@
 
 The app talks to one backend through this contract. `MockApi` serves it today from an on-device SQLite mock database (`fridgechef-mock.db`, seeded from typed TypeScript seed modules). When the real endpoint arrives, `HttpApi` calls it. If the real backend differs, adapt `contract.ts` / `mappers.ts` / `endpoints.ts` only (see `architecture.md`).
 
-All bodies are JSON. Auth is `<EXPO_PUBLIC_API_AUTH_HEADER>: <EXPO_PUBLIC_API_AUTH_SCHEME> <EXPO_PUBLIC_API_KEY>`. Also send `X-Client: fridgechef-ios/<appVersion>`.
+All bodies are JSON. Auth is `<EXPO_PUBLIC_API_AUTH_HEADER>: <EXPO_PUBLIC_API_AUTH_SCHEME> <EXPO_PUBLIC_API_KEY>` (an empty scheme sends the raw key; an empty key sends no auth header). Also send `X-Client: fridgechef-ios/<appVersion>`. Unknown extra response fields are ignored.
 
 ## Error shape (any non-2xx)
 
@@ -12,11 +12,15 @@ All bodies are JSON. Auth is `<EXPO_PUBLIC_API_AUTH_HEADER>: <EXPO_PUBLIC_API_AU
 
 | HTTP | App `ApiError.kind` | Retried automatically? |
 |---|---|---|
-| network failure / abort | `network` / `timeout` | yes, 2× with backoff (except the detect call, which is retried once) |
+| network failure / timeout | `network` / `timeout` | yes, 2× with backoff (500 ms, then 1 s; the detect call is retried once) |
 | 401 / 403 | `unauthorized` | no |
-| 429 | `rate_limited` | yes, after `retryAfterSec` (max 1 retry) |
+| 404 | `not_found` | no |
+| 429 | `rate_limited` | yes, after `retryAfterSec` or the `Retry-After` header (max 1 retry; not retried if the wait is over 30 s) |
 | 5xx | `server` | yes, 2× with backoff |
-| 2xx that fails Zod | `invalid_response` | no |
+| any other 4xx | `server` | no |
+| 2xx that fails Zod (or isn't JSON) | `invalid_response` | no |
+
+A request the caller aborts (screen left, query cancelled) is not retried.
 
 ---
 
@@ -77,7 +81,7 @@ Response:
 
 - `confidence` is `high` | `med` | `low`. `low` items must be confirmed by the user before suggestions are requested.
 - `altUnit.factor` is how many `unit` are in one `altUnit` (for example 240 ml per cup).
-- `altUnit` and `imageUrl` are optional.
+- `altUnit` and `imageUrl` are optional. `photoWarnings` may be omitted (treated as `[]`).
 - `photoWarnings[].type` is `blurry` | `dark` | `no_food`.
 
 ## `POST /v1/recipes/suggest`
@@ -126,6 +130,7 @@ Response: `Recipe`. Used to refresh saved or cooked recipes. The app also stores
 - `diet` is `nonveg` | `egg` | `veg` | `vegan`.
 - `effort` and `spice` are 1-5.
 - `ingredients[].id` matches detected item ids and staple ids wherever possible. Unknown ids count as missing.
+- `imageUrl` is optional; `swaps` may be omitted (treated as `[]`). Everything else is required.
 
 ## Mock behaviour (`MockApi`)
 

@@ -1,0 +1,203 @@
+/**
+ * Mock backend seed: everything detection "finds" (`POST /v1/scans/detect`).
+ * `photoIndex` = the photo it shows up in: fewer photos, fewer items.
+ * Ported from fridgechef-mockup/js/data.js with values unchanged, and typed as contract DTOs so
+ * a shape mismatch fails `tsc`. Copy follows the content rules (checked by content-rules.test.ts).
+ */
+import type { DetectedItemDto } from '../../../contract';
+
+export const detectionSeed: DetectedItemDto[] = [
+  {
+    id: 'chicken',
+    name: 'Chicken breast',
+    category: 'Protein',
+    unit: 'g',
+    min: 100,
+    max: 1500,
+    step: 50,
+    estimate: 500,
+    confidence: 'low',
+    photoIndex: 0,
+    imageUrl:
+      'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'paneer',
+    name: 'Paneer',
+    category: 'Dairy',
+    unit: 'g',
+    min: 0,
+    max: 1000,
+    step: 25,
+    estimate: 200,
+    confidence: 'low',
+    photoIndex: 0,
+    imageUrl:
+      'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'yogurt',
+    name: 'Yogurt',
+    category: 'Dairy',
+    unit: 'g',
+    min: 0,
+    max: 1000,
+    step: 50,
+    estimate: 400,
+    confidence: 'low',
+    photoIndex: 0,
+    imageUrl:
+      'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'rice',
+    name: 'Rice',
+    category: 'Grains',
+    unit: 'g',
+    min: 0,
+    max: 5000,
+    step: 100,
+    estimate: 1500,
+    confidence: 'med',
+    photoIndex: 1,
+    imageUrl:
+      'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'onion',
+    name: 'Onion',
+    category: 'Veg',
+    unit: 'pcs',
+    min: 0,
+    max: 12,
+    step: 1,
+    estimate: 3,
+    confidence: 'med',
+    photoIndex: 1,
+    altUnit: {
+      unit: 'g',
+      factor: 1 / 110,
+      step: 50,
+    },
+    imageUrl:
+      'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'spinach',
+    name: 'Spinach',
+    category: 'Veg',
+    unit: 'bunch',
+    min: 0,
+    max: 4,
+    step: 0.5,
+    estimate: 1,
+    confidence: 'med',
+    photoIndex: 0,
+    altUnit: {
+      unit: 'g',
+      factor: 1 / 250,
+      step: 25,
+    },
+    imageUrl:
+      'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'eggs',
+    name: 'Eggs',
+    category: 'Protein',
+    unit: 'pcs',
+    min: 0,
+    max: 30,
+    step: 1,
+    estimate: 6,
+    confidence: 'high',
+    photoIndex: 0,
+    altUnit: {
+      unit: 'g',
+      factor: 1 / 50,
+      step: 50,
+    },
+    imageUrl:
+      'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'tomato',
+    name: 'Tomatoes',
+    category: 'Veg',
+    unit: 'pcs',
+    min: 0,
+    max: 15,
+    step: 1,
+    estimate: 4,
+    confidence: 'high',
+    photoIndex: 0,
+    altUnit: {
+      unit: 'g',
+      factor: 1 / 100,
+      step: 50,
+    },
+    imageUrl:
+      'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'milk',
+    name: 'Milk',
+    category: 'Dairy',
+    unit: 'ml',
+    min: 0,
+    max: 2000,
+    step: 50,
+    estimate: 750,
+    confidence: 'high',
+    photoIndex: 0,
+    altUnit: {
+      unit: 'cups',
+      factor: 240,
+      step: 0.25,
+    },
+    imageUrl:
+      'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'pepper',
+    name: 'Bell pepper',
+    category: 'Veg',
+    unit: 'pcs',
+    min: 0,
+    max: 8,
+    step: 1,
+    estimate: 2,
+    confidence: 'high',
+    photoIndex: 0,
+    imageUrl:
+      'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'garlic',
+    name: 'Garlic',
+    category: 'Veg',
+    unit: 'cloves',
+    min: 0,
+    max: 30,
+    step: 1,
+    estimate: 10,
+    confidence: 'high',
+    photoIndex: 1,
+    imageUrl:
+      'https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?auto=format&fit=crop&w=200&q=70',
+  },
+  {
+    id: 'lemon',
+    name: 'Lemon',
+    category: 'Fruit',
+    unit: 'pcs',
+    min: 0,
+    max: 10,
+    step: 1,
+    estimate: 2,
+    confidence: 'high',
+    photoIndex: 1,
+    imageUrl:
+      'https://images.unsplash.com/photo-1590502593747-42a996133562?auto=format&fit=crop&w=200&q=70',
+  },
+];
